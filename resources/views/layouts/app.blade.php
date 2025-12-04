@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'Dashboard') - Hệ thống chấm công</title>
+    
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-brand {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-nav {
+            padding: 1.5rem 1rem;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.875rem 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .nav-link i {
+            font-size: 1.25rem;
+            margin-right: 0.75rem;
+            width: 24px;
+        }
+        
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .top-navbar {
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+        
+        .card-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .stat-card {
+            padding: 1.5rem;
+            border-radius: 16px;
+            background: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+        }
+        
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        
+        .badge-custom {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        
+        .user-profile {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-top: auto;
+        }
+        
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+        
+        .alert-gradient {
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+        }
+        
+        .alert-success-gradient {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+        
+        .alert-danger-gradient {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+        
+        .time-badge {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Flatpickr Custom Dark Theme Styles - Trực quan rõ ràng */
+        .flatpickr-calendar {
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            font-family: 'Poppins', sans-serif;
+            background: #1a202c;
+            color: #ffffff;
+            width: 100%;
+            max-width: 520px;
+            min-width: 480px;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
+        }
+
+        .flatpickr-months {
+            border-radius: 20px 20px 0 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1.25rem 1.5rem;
+            border-bottom: 3px solid rgba(255,255,255,0.2);
+            margin: 0;
+        }
+
+        .flatpickr-month {
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .flatpickr-current-month {
+            color: white;
+            font-weight: 800;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            flex: 1;
+            text-align: center;
+        }
+
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            padding: 0.5rem 1.25rem;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 150px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: visible;
+        }
+
+        .flatpickr-current-month .flatpickr-monthDropdown-months:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .flatpickr-current-month .numInputWrapper {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            padding: 0.5rem 0.9rem;
+            min-width: 95px;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .flatpickr-current-month .numInputWrapper input {
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: transparent;
+            border: none;
+            text-align: center;
+            width: 100%;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .flatpickr-current-month .numInputWrapper input:hover {
+            color: #ffd700;
+        }
+
+        .flatpickr-current-month .numInputWrapper .arrowUp,
+        .flatpickr-current-month .numInputWrapper .arrowDown {
+            color: white;
+            border-color: rgba(255,255,255,0.4);
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.2s ease;
+        }
+
+        .flatpickr-current-month .numInputWrapper .arrowUp:hover,
+        .flatpickr-current-month .numInputWrapper .arrowDown:hover {
+            color: #ffd700;
+            border-color: rgba(255,255,255,0.6);
+            background: rgba(255,255,255,0.25);
+            transform: scale(1.05);
+        }
+
+        .flatpickr-monthDropdown-months {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 12px;
+            padding-right: 2.75rem !important;
+        }
+
+        .flatpickr-monthDropdown-months option {
+            background: #ffffff;
+            color: #1a202c;
+            padding: 0.75rem 1rem;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .flatpickr-monthDropdown-months option:hover,
+        .flatpickr-monthDropdown-months option:focus {
+            background: #667eea;
+            color: #ffffff;
+        }
+        
+        .flatpickr-monthDropdown-months option:checked {
+            background: #667eea;
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .flatpickr-prev-month,
+        .flatpickr-next-month {
+            color: white;
+            fill: white;
+            padding: 0.5rem;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.15);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .flatpickr-prev-month:hover,
+        .flatpickr-next-month:hover {
+            background: rgba(255,255,255,0.3);
+            color: #ffd700;
+            fill: #ffd700;
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .flatpickr-weekdays {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+            border-bottom: 2px solid rgba(255,255,255,0.15);
+            padding: 1rem 1.5rem;
+            margin: 0;
+            display: flex;
+            width: 100%;
+            gap: 4px;
+        }
+
+        .flatpickr-weekday {
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0.5rem 0;
+            flex: 1;
+            min-width: 0;
+            text-align: center;
+            box-sizing: border-box;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .flatpickr-days {
+            background: #1a202c;
+            padding: 1rem 1.5rem;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            gap: 6px;
+        }
+
+        .flatpickr-day {
+            color: #ffffff;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            font-size: 1rem;
+            height: 44px;
+            line-height: 40px;
+            margin: 0;
+            flex: 1 1 calc(14.28% - 5px);
+            min-width: 0;
+            max-width: none;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .flatpickr-day:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.4) 0%, rgba(118, 75, 162, 0.4) 100%);
+            border-color: rgba(102, 126, 234, 0.6);
+            color: #ffffff;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .flatpickr-day.selected,
+        .flatpickr-day.startRange,
+        .flatpickr-day.endRange {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #ffffff;
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 1.1rem;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            transform: scale(1.1);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .flatpickr-day.today {
+            border-color: #ffd700;
+            color: #ffd700;
+            font-weight: 800;
+            background: rgba(255, 215, 0, 0.2);
+            border-width: 3px;
+            text-shadow: 0 2px 4px rgba(255, 215, 0, 0.6);
+            box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.3);
+        }
+
+        .flatpickr-day.today:hover {
+            background: rgba(255, 215, 0, 0.3);
+            border-color: #ffd700;
+            color: #ffd700;
+            text-shadow: 0 2px 4px rgba(255, 215, 0, 0.8);
+            box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.4);
+        }
+
+        .flatpickr-day.flatpickr-disabled,
+        .flatpickr-day.prevMonthDay,
+        .flatpickr-day.nextMonthDay {
+            color: #6b7280;
+            opacity: 0.5;
+            font-weight: 500;
+            text-shadow: none;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .flatpickr-day.flatpickr-disabled:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: transparent;
+            transform: none;
+        }
+
+        .flatpickr-input {
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: white;
+            color: #2d3748;
+        }
+
+        .flatpickr-input:focus {
+            border-color: #00d4ff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 212, 255, 0.25);
+        }
+
+        .flatpickr-time {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            background: #1a202c;
+        }
+
+        .flatpickr-time input {
+            font-weight: 500;
+            color: #e2e8f0;
+            background: transparent;
+        }
+
+        .flatpickr-time input:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .flatpickr-time .flatpickr-time-separator {
+            color: #e2e8f0;
+        }
+
+        .flatpickr-am-pm {
+            color: #e2e8f0;
+        }
+
+        .flatpickr-am-pm:hover {
+            background: rgba(255,255,255,0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar d-flex flex-column" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="d-flex align-items-center">
+                <div class="bg-white rounded-3 p-2 me-3">
+                    <i class="bi bi-clock-history text-primary fs-3"></i>
+                </div>
+                <div>
+                    <h5 class="text-white mb-0 fw-bold">Chấm Công</h5>
+                    <small class="text-white-50">Hệ thống quản lý</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-nav flex-grow-1">
+            <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <i class="bi bi-house-door"></i>
+                <span>Dashboard</span>
+            </a>
+            
+            <a href="{{ route('attendance.check-in') }}" class="nav-link {{ request()->routeIs('attendance.check-in') ? 'active' : '' }}">
+                <i class="bi bi-fingerprint"></i>
+                <span>Chấm công</span>
+            </a>
+            
+            <a href="{{ route('attendance.history') }}" class="nav-link {{ request()->routeIs('attendance.history') ? 'active' : '' }}">
+                <i class="bi bi-clock-history"></i>
+                <span>Lịch sử chấm công</span>
+            </a>
+
+            @can('manage-employees')
+            <div class="text-white-50 text-uppercase small fw-bold px-3 mt-4 mb-2">Quản lý</div>
+            
+            <a href="{{ route('employees.index') }}" class="nav-link {{ request()->routeIs('employees.*') ? 'active' : '' }}">
+                <i class="bi bi-people"></i>
+                <span>Nhân viên</span>
+            </a>
+            
+            <a href="{{ route('reports.index') }}" class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">
+                <i class="bi bi-bar-chart"></i>
+                <span>Báo cáo</span>
+            </a>
+            @endcan
+            
+            <a href="{{ route('leave-requests.index') }}" class="nav-link {{ request()->routeIs('leave-requests.*') ? 'active' : '' }}">
+                <i class="bi bi-file-earmark-text"></i>
+                <span>Đơn xin nghỉ</span>
+            </a>
+            
+            <a href="{{ route('overtime-requests.index') }}" class="nav-link {{ request()->routeIs('overtime-requests.*') ? 'active' : '' }}">
+                <i class="bi bi-clock-history"></i>
+                <span>Đăng ký làm thêm giờ</span>
+            </a>
+
+            @can('manage-employees')
+            <a href="{{ route('payroll.index') }}" class="nav-link {{ request()->routeIs('payroll.index') || request()->routeIs('payroll.show') || request()->routeIs('payroll.generate') ? 'active' : '' }}">
+                <i class="bi bi-cash-stack"></i>
+                <span>Quản lý lương</span>
+            </a>
+            @else
+            <a href="{{ route('payroll.my-payroll') }}" class="nav-link {{ request()->routeIs('payroll.my-payroll') ? 'active' : '' }}">
+                <i class="bi bi-wallet2"></i>
+                <span>Bảng lương của tôi</span>
+            </a>
+            @endcan
+
+            @if(auth()->user()->hasRole('admin'))
+            <div class="text-white-50 text-uppercase small fw-bold px-3 mt-4 mb-2">Quản trị</div>
+            
+            <a href="{{ route('employee-profiles.index') }}" class="nav-link {{ request()->routeIs('employee-profiles.*') ? 'active' : '' }}">
+                <i class="bi bi-file-person"></i>
+                <span>Hồ sơ nhân viên</span>
+            </a>
+            
+            <a href="{{ route('contracts.index') }}" class="nav-link {{ request()->routeIs('contracts.*') ? 'active' : '' }}">
+                <i class="bi bi-file-earmark-text"></i>
+                <span>Hợp đồng</span>
+            </a>
+            
+            <a href="{{ route('settings.index') }}" class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                <i class="bi bi-gear"></i>
+                <span>Cài đặt</span>
+            </a>
+            @endif
+        </div>
+
+        <div class="p-3">
+            <div class="user-profile">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="user-avatar me-3">
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    </div>
+                    <div class="flex-grow-1 text-white">
+                        <div class="fw-semibold">{{ auth()->user()->name }}</div>
+                        <small class="text-white-50">{{ auth()->user()->email }}</small>
+                    </div>
+                </div>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="btn btn-light btn-sm w-100">
+                        <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Top Navbar -->
+        <div class="top-navbar">
+            <div class="d-flex align-items-center justify-content-between">
+                <button class="btn btn-light d-lg-none" id="sidebarToggle">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div class="flex-grow-1"></div>
+                <div class="time-badge">
+                    <i class="bi bi-clock me-2"></i>
+                    <span id="currentDateTime"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        @if(session('success'))
+        <div class="alert alert-success-gradient alert-gradient alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <strong>Thành công!</strong> {{ session('success') }}
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+        </div>
+        @endif
+
+        @if(session('error'))
+        <div class="alert alert-danger-gradient alert-gradient alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <strong>Lỗi!</strong> {{ session('error') }}
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+        </div>
+        @endif
+
+        @if($errors->any())
+        <div class="alert alert-danger-gradient alert-gradient alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <strong>Có lỗi xảy ra:</strong>
+            <ul class="mb-0 mt-2">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+        </div>
+        @endif
+
+        <!-- Page Content -->
+        @yield('content')
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
+    
+    <script>
+        // Sidebar toggle
+        document.getElementById('sidebarToggle')?.addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('show');
+        });
+
+        // Update time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            document.getElementById('currentDateTime').textContent = 
+                now.toLocaleDateString('vi-VN', options);
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+
+        // Initialize Flatpickr for all date inputs
+        document.addEventListener('DOMContentLoaded', function() {
+            // Default options for date picker
+            const defaultOptions = {
+                locale: 'vn',
+                dateFormat: 'Y-m-d',
+                altInput: true,
+                altFormat: 'd/m/Y',
+                allowInput: true,
+                clickOpens: true,
+                animate: true,
+                monthSelectorType: 'dropdown',
+                static: true,
+                inline: false,
+                showMonths: 1,
+                enableTime: false,
+                time_24hr: false,
+                minDate: null,
+                maxDate: null,
+            };
+
+            // Initialize all date inputs
+            const dateInputs = document.querySelectorAll('input[type="date"]');
+            dateInputs.forEach(function(input) {
+                const options = { ...defaultOptions };
+                
+                // Set min date if attribute exists
+                if (input.hasAttribute('min')) {
+                    options.minDate = input.getAttribute('min');
+                }
+                
+                // Set max date if attribute exists
+                if (input.hasAttribute('max')) {
+                    options.maxDate = input.getAttribute('max');
+                }
+                
+                // Convert value from YYYY-MM-DD to Date object if exists
+                if (input.value) {
+                    options.defaultDate = input.value;
+                }
+                
+                const fp = flatpickr(input, options);
+                
+                // Improve year selector - make it more visible
+                if (fp.calendarContainer) {
+                    const yearInput = fp.calendarContainer.querySelector('.numInputWrapper input');
+                    if (yearInput) {
+                        yearInput.setAttribute('title', 'Nhấn để chọn năm');
+                        yearInput.style.cursor = 'pointer';
+                    }
+                }
+            });
+
+            // Initialize datetime-local inputs
+            const datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
+            datetimeInputs.forEach(function(input) {
+                const options = {
+                    ...defaultOptions,
+                    enableTime: true,
+                    time_24hr: true,
+                    dateFormat: 'Y-m-d H:i',
+                    altFormat: 'd/m/Y H:i',
+                };
+                
+                if (input.value) {
+                    options.defaultDate = input.value;
+                }
+                
+                flatpickr(input, options);
+            });
+        });
+    </script>
+    
+    @stack('scripts')
+</body>
+</html>
