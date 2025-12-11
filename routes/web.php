@@ -9,6 +9,8 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+Route::view('/offline', 'offline')->name('offline');
+
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);

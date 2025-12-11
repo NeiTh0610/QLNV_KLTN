@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') - Hệ thống chấm công</title>
+    <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+    <meta name="theme-color" content="#0f766e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="apple-touch-icon" href="{{ asset('icons/icon-192x192.png') }}">
     
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -835,7 +840,7 @@
     <!-- Flatpickr JS -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
-    
+
     <script>
         // Sidebar toggle
         document.getElementById('sidebarToggle')?.addEventListener('click', function() {
@@ -934,6 +939,8 @@
     </script>
 
     @stack('scripts')
+
+    @vite(['resources/js/app.js'])
     
     <style>
         /* Footer Styles */

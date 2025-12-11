@@ -5,6 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
+        <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
+        <meta name="theme-color" content="#0f766e">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
