@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') - Hệ thống chấm công</title>
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <title><?php echo $__env->yieldContent('title', 'Dashboard'); ?> - Hệ thống chấm công</title>
     
     <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -599,90 +599,91 @@
             </div>
 
             <div class="sidebar-nav flex-grow-1">
-                <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <a href="<?php echo e(route('dashboard')); ?>" class="nav-link <?php echo e(request()->routeIs('dashboard') ? 'active' : ''); ?>">
                     <i class="bi bi-house-door"></i>
                     <span>Dashboard</span>
                 </a>
                 
-                <a href="{{ route('attendance.check-in') }}" class="nav-link {{ request()->routeIs('attendance.check-in') ? 'active' : '' }}">
+                <a href="<?php echo e(route('attendance.check-in')); ?>" class="nav-link <?php echo e(request()->routeIs('attendance.check-in') ? 'active' : ''); ?>">
                     <i class="bi bi-fingerprint"></i>
                     <span>Chấm công</span>
                 </a>
                 
-                <a href="{{ route('attendance.history') }}" class="nav-link {{ request()->routeIs('attendance.history') ? 'active' : '' }}">
+                <a href="<?php echo e(route('attendance.history')); ?>" class="nav-link <?php echo e(request()->routeIs('attendance.history') ? 'active' : ''); ?>">
                     <i class="bi bi-clock-history"></i>
                     <span>Lịch sử chấm công</span>
                 </a>
 
-                @can('manage-employees')
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage-employees')): ?>
                 <div class="text-white-50 text-uppercase small fw-bold px-3 mt-4 mb-2">Quản lý</div>
                 
-                <a href="{{ route('employees.index') }}" class="nav-link {{ request()->routeIs('employees.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('employees.index')); ?>" class="nav-link <?php echo e(request()->routeIs('employees.*') ? 'active' : ''); ?>">
                     <i class="bi bi-people"></i>
                     <span>Nhân viên</span>
                 </a>
                 
-                <a href="{{ route('reports.index') }}" class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('reports.index')); ?>" class="nav-link <?php echo e(request()->routeIs('reports.*') ? 'active' : ''); ?>">
                     <i class="bi bi-bar-chart"></i>
                     <span>Báo cáo</span>
                 </a>
-                @endcan
+                <?php endif; ?>
                 
-                <a href="{{ route('leave-requests.index') }}" class="nav-link {{ request()->routeIs('leave-requests.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('leave-requests.index')); ?>" class="nav-link <?php echo e(request()->routeIs('leave-requests.*') ? 'active' : ''); ?>">
                     <i class="bi bi-file-earmark-text"></i>
                     <span>Đơn xin nghỉ</span>
                 </a>
                 
-                <a href="{{ route('overtime-requests.index') }}" class="nav-link {{ request()->routeIs('overtime-requests.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('overtime-requests.index')); ?>" class="nav-link <?php echo e(request()->routeIs('overtime-requests.*') ? 'active' : ''); ?>">
                     <i class="bi bi-clock-history"></i>
                     <span>Đăng ký làm thêm giờ</span>
                 </a>
 
-                @can('manage-employees')
-                <a href="{{ route('payroll.index') }}" class="nav-link {{ request()->routeIs('payroll.index') || request()->routeIs('payroll.show') || request()->routeIs('payroll.generate') ? 'active' : '' }}">
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage-employees')): ?>
+                <a href="<?php echo e(route('payroll.index')); ?>" class="nav-link <?php echo e(request()->routeIs('payroll.index') || request()->routeIs('payroll.show') || request()->routeIs('payroll.generate') ? 'active' : ''); ?>">
                     <i class="bi bi-cash-stack"></i>
                     <span>Quản lý lương</span>
                 </a>
-                @else
-                <a href="{{ route('payroll.my-payroll') }}" class="nav-link {{ request()->routeIs('payroll.my-payroll') ? 'active' : '' }}">
+                <?php else: ?>
+                <a href="<?php echo e(route('payroll.my-payroll')); ?>" class="nav-link <?php echo e(request()->routeIs('payroll.my-payroll') ? 'active' : ''); ?>">
                     <i class="bi bi-wallet2"></i>
                     <span>Bảng lương của tôi</span>
                 </a>
-                @endcan
+                <?php endif; ?>
 
-                @if(auth()->user()->hasRole('admin'))
+                <?php if(auth()->user()->hasRole('admin')): ?>
                 <div class="text-white-50 text-uppercase small fw-bold px-3 mt-4 mb-2">Quản trị</div>
                 
-                <a href="{{ route('employee-profiles.index') }}" class="nav-link {{ request()->routeIs('employee-profiles.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('employee-profiles.index')); ?>" class="nav-link <?php echo e(request()->routeIs('employee-profiles.*') ? 'active' : ''); ?>">
                     <i class="bi bi-file-person"></i>
                     <span>Hồ sơ nhân viên</span>
                 </a>
                 
-                <a href="{{ route('contracts.index') }}" class="nav-link {{ request()->routeIs('contracts.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('contracts.index')); ?>" class="nav-link <?php echo e(request()->routeIs('contracts.*') ? 'active' : ''); ?>">
                     <i class="bi bi-file-earmark-text"></i>
                     <span>Hợp đồng</span>
                 </a>
                 
-                <a href="{{ route('settings.index') }}" class="nav-link {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                <a href="<?php echo e(route('settings.index')); ?>" class="nav-link <?php echo e(request()->routeIs('settings.*') ? 'active' : ''); ?>">
                     <i class="bi bi-gear"></i>
                     <span>Cài đặt</span>
                 </a>
-                @endif
+                <?php endif; ?>
             </div>
 
             <div class="p-3">
                 <div class="user-profile">
                     <div class="d-flex align-items-center mb-3">
                         <div class="user-avatar me-3">
-                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                            <?php echo e(strtoupper(substr(auth()->user()->name, 0, 1))); ?>
+
                         </div>
                         <div class="flex-grow-1 text-white">
-                            <div class="fw-semibold">{{ auth()->user()->name }}</div>
-                            <small class="text-white-50">{{ auth()->user()->email }}</small>
+                            <div class="fw-semibold"><?php echo e(auth()->user()->name); ?></div>
+                            <small class="text-white-50"><?php echo e(auth()->user()->email); ?></small>
                         </div>
                     </div>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
+                    <form method="POST" action="<?php echo e(route('logout')); ?>">
+                        <?php echo csrf_field(); ?>
                         <button type="submit" class="btn btn-light btn-sm w-100">
                             <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
                         </button>
@@ -710,38 +711,40 @@
                 </div>
 
                 <!-- Alerts -->
-                @if(session('success'))
+                <?php if(session('success')): ?>
                 <div class="alert alert-success-gradient alert-gradient alert-dismissible fade show" role="alert">
                     <i class="bi bi-check-circle-fill me-2"></i>
-                    <strong>Thành công!</strong> {{ session('success') }}
+                    <strong>Thành công!</strong> <?php echo e(session('success')); ?>
+
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
                 </div>
-                @endif
+                <?php endif; ?>
 
-                @if(session('error'))
+                <?php if(session('error')): ?>
                 <div class="alert alert-danger-gradient alert-gradient alert-dismissible fade show" role="alert">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                    <strong>Lỗi!</strong> {{ session('error') }}
+                    <strong>Lỗi!</strong> <?php echo e(session('error')); ?>
+
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
                 </div>
-                @endif
+                <?php endif; ?>
 
-                @if($errors->any())
+                <?php if($errors->any()): ?>
                 <div class="alert alert-danger-gradient alert-gradient alert-dismissible fade show" role="alert">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>
                     <strong>Có lỗi xảy ra:</strong>
                     <ul class="mb-0 mt-2">
-                        @foreach($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
+                        <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <li><?php echo e($error); ?></li>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </ul>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
                 </div>
-                @endif
+                <?php endif; ?>
 
                 <!-- Page Content -->
                 <div class="main-content-wrapper">
-                    @yield('content')
+                    <?php echo $__env->yieldContent('content'); ?>
                 </div>
             </div>
 
@@ -816,7 +819,7 @@
                         <div class="col-12 text-center">
                             <p class="footer-copyright">
                                 <i class="bi bi-c-circle"></i>
-                                {{ date('Y') }} <strong>Công Ty TNHH PHẠM NGỌC THIỆN</strong>. 
+                                <?php echo e(date('Y')); ?> <strong>Công Ty TNHH PHẠM NGỌC THIỆN</strong>. 
                                 Tất cả quyền được bảo lưu.
                             </p>
                             <p class="footer-version">
@@ -933,7 +936,7 @@
         });
     </script>
 
-    @stack('scripts')
+    <?php echo $__env->yieldPushContent('scripts'); ?>
     
     <style>
         /* Footer Styles */
@@ -1063,3 +1066,4 @@
     </style>
 </body>
 </html>
+<?php /**PATH C:\Users\Pham Thien\Documents\GitHub\QLNV_KLTN\resources\views/layouts/app.blade.php ENDPATH**/ ?>
