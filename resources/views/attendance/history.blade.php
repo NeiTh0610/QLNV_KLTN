@@ -68,8 +68,7 @@
                             <td class="py-3 px-4">
                                 @if($attendance->check_in_at && $attendance->check_out_at)
                                     <span class="fw-semibold">
-                                        {{ \Carbon\Carbon::parse($attendance->check_in_at)->diffInHours(\Carbon\Carbon::parse($attendance->check_out_at)) }}h
-                                        {{ \Carbon\Carbon::parse($attendance->check_in_at)->diffInMinutes(\Carbon\Carbon::parse($attendance->check_out_at)) % 60 }}m
+                                        {{ $attendance->worked_duration_text }}
                                     </span>
                                 @else
                                     -

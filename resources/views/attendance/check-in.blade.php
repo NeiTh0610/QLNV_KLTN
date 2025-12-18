@@ -276,9 +276,11 @@
                                     <span class="badge badge-custom" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">Thời gian</span>
                                 </div>
                                 <h5 class="fw-bold mb-1">
-                                    @if($todayAttendance->check_in_at && $todayAttendance->check_out_at)
-                                        {{ \Carbon\Carbon::parse($todayAttendance->check_in_at)->diffInHours(\Carbon\Carbon::parse($todayAttendance->check_out_at)) }}h 
-                                        {{ \Carbon\Carbon::parse($todayAttendance->check_in_at)->diffInMinutes(\Carbon\Carbon::parse($todayAttendance->check_out_at)) % 60 }}m
+                                    @php
+                                        $workedDuration = $todayAttendance->worked_duration_text;
+                                    @endphp
+                                    @if($workedDuration)
+                                        {{ $workedDuration }}
                                     @else
                                         <span class="text-muted">Đang tính...</span>
                                     @endif

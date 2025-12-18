@@ -35,5 +35,28 @@ class Attendance extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function getWorkedMinutesAttribute(): ?int
+    {
+        if (!$this->check_in_at || !$this->check_out_at) {
+            return null;
+        }
+
+        return $this->check_in_at->diffInMinutes($this->check_out_at);
+    }
+
+    public function getWorkedDurationTextAttribute(): ?string
+    {
+        $minutes = $this->worked_minutes;
+
+        if ($minutes === null) {
+            return null;
+        }
+
+        $hours = intdiv($minutes, 60);
+        $remainingMinutes = $minutes % 60;
+
+        return "{$hours}h {$remainingMinutes}m";
+    }
 }
 

@@ -70,8 +70,8 @@
                             <td class="py-3 px-4">
                                 <?php if($attendance->check_in_at && $attendance->check_out_at): ?>
                                     <span class="fw-semibold">
-                                        <?php echo e(\Carbon\Carbon::parse($attendance->check_in_at)->diffInHours(\Carbon\Carbon::parse($attendance->check_out_at))); ?>h
-                                        <?php echo e(\Carbon\Carbon::parse($attendance->check_in_at)->diffInMinutes(\Carbon\Carbon::parse($attendance->check_out_at)) % 60); ?>m
+                                        <?php echo e($attendance->worked_duration_text); ?>
+
                                     </span>
                                 <?php else: ?>
                                     -
