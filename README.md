@@ -98,7 +98,7 @@ Truy cập: http://127.0.0.1:8000/
 ## Tài khoản mặc định
 
 ### Admin
-- **Email:** admin@example.com
+- **Email:** admin@goldenbown.com
 - **Mật khẩu:** Admin@123
 
 ### Nhân viên mẫu
