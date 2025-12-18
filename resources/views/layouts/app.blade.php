@@ -215,15 +215,186 @@
             color: white;
         }
         
+        /* Mobile Responsive Styles */
         @media (max-width: 992px) {
             .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                width: 280px;
                 transform: translateX(-100%);
+                z-index: 1050;
+                transition: transform 0.3s ease;
             }
+            
             .sidebar.show {
                 transform: translateX(0);
             }
+            
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1040;
+            }
+            
+            .sidebar-overlay.show {
+                display: block;
+            }
+            
             .main-content {
+                padding: 1rem;
                 margin-left: 0;
+            }
+            
+            .top-navbar {
+                padding: 0.75rem 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .time-badge {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.8rem;
+            }
+            
+            .time-badge span {
+                display: none;
+            }
+            
+            .time-badge i {
+                margin-right: 0;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 0.75rem;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .card {
+                border-radius: 12px;
+            }
+            
+            .stat-card {
+                padding: 1rem;
+            }
+            
+            .stat-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 1.25rem;
+            }
+            
+            .main-footer {
+                padding: 2rem 1.5rem 1rem;
+                margin-top: 2rem;
+            }
+            
+            .footer-section {
+                margin-bottom: 2rem;
+                text-align: center;
+            }
+            
+            .footer-title {
+                justify-content: center;
+            }
+            
+            .footer-text {
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .main-content {
+                padding: 0.5rem;
+            }
+            
+            .top-navbar {
+                padding: 0.5rem;
+                border-radius: 12px;
+            }
+            
+            .time-badge {
+                font-size: 0.7rem;
+                padding: 0.3rem 0.6rem;
+            }
+            
+            .btn-gradient {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+            }
+            
+            .sidebar-brand h5 {
+                font-size: 0.9rem;
+            }
+            
+            .sidebar-brand small {
+                font-size: 0.7rem;
+            }
+        }
+        
+        /* Table responsive improvements */
+        @media (max-width: 768px) {
+            .table-responsive {
+                border-radius: 12px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .table {
+                min-width: 800px;
+                font-size: 0.875rem;
+            }
+            
+            .table th,
+            .table td {
+                padding: 0.5rem 0.75rem;
+                white-space: nowrap;
+            }
+            
+            .table .btn-group,
+            .table .d-inline {
+                display: flex;
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+            
+            .table .btn {
+                font-size: 0.75rem;
+                padding: 0.25rem 0.5rem;
+            }
+        }
+        
+        /* Form responsive */
+        @media (max-width: 768px) {
+            .form-control,
+            .form-select {
+                font-size: 16px;
+            }
+            
+            .card-body {
+                padding: 1rem;
+            }
+            
+            .row.g-3 > [class*="col-"] {
+                margin-bottom: 0.5rem;
+            }
+        }
+        
+        /* Flatpickr responsive */
+        @media (max-width: 576px) {
+            .flatpickr-calendar {
+                max-width: 100%;
+                min-width: 280px;
             }
         }
         
@@ -589,6 +760,9 @@
 </head>
 <body>
     <div class="app-layout">
+        <!-- Sidebar Overlay (mobile) -->
+        <div class="sidebar-overlay d-lg-none" id="sidebarOverlay"></div>
+
         <!-- Sidebar -->
         <div class="sidebar d-flex flex-column" id="sidebar">
             <div class="sidebar-brand">
@@ -842,32 +1016,64 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
 
     <script>
-        // Sidebar toggle
-        document.getElementById('sidebarToggle')?.addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('show');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        
+        function openSidebar() {
+            sidebar?.classList.add('show');
+            sidebarOverlay?.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeSidebar() {
+            sidebar?.classList.remove('show');
+            sidebarOverlay?.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+        
+        sidebarToggle?.addEventListener('click', function() {
+            if (sidebar?.classList.contains('show')) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
         });
-
-        // Update time
+        
+        sidebarOverlay?.addEventListener('click', closeSidebar);
+        
+        if (window.innerWidth < 992) {
+            document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+                link.addEventListener('click', closeSidebar);
+            });
+        }
+        
         function updateDateTime() {
             const now = new Date();
+            const isMobile = window.innerWidth < 992;
             const options = { 
-                weekday: 'long', 
+                weekday: isMobile ? 'short' : 'long', 
                 year: 'numeric', 
-                month: 'long', 
+                month: isMobile ? 'short' : 'long', 
                 day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit',
-                second: '2-digit'
+                second: isMobile ? undefined : '2-digit'
             };
             document.getElementById('currentDateTime').textContent = 
                 now.toLocaleDateString('vi-VN', options);
         }
         updateDateTime();
         setInterval(updateDateTime, 1000);
+        
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 992) {
+                closeSidebar();
+            }
+        });
 
         // Initialize Flatpickr for all date inputs
         document.addEventListener('DOMContentLoaded', function() {
-            // Default options for date picker
             const defaultOptions = {
                 locale: 'vn',
                 dateFormat: 'Y-m-d',
@@ -886,29 +1092,24 @@
                 maxDate: null,
             };
 
-            // Initialize all date inputs
             const dateInputs = document.querySelectorAll('input[type="date"]');
             dateInputs.forEach(function(input) {
                 const options = { ...defaultOptions };
                 
-                // Set min date if attribute exists
                 if (input.hasAttribute('min')) {
                     options.minDate = input.getAttribute('min');
                 }
                 
-                // Set max date if attribute exists
                 if (input.hasAttribute('max')) {
                     options.maxDate = input.getAttribute('max');
                 }
                 
-                // Convert value from YYYY-MM-DD to Date object if exists
                 if (input.value) {
                     options.defaultDate = input.value;
                 }
                 
                 const fp = flatpickr(input, options);
                 
-                // Improve year selector - make it more visible
                 if (fp.calendarContainer) {
                     const yearInput = fp.calendarContainer.querySelector('.numInputWrapper input');
                     if (yearInput) {
@@ -918,7 +1119,6 @@
                 }
             });
 
-            // Initialize datetime-local inputs
             const datetimeInputs = document.querySelectorAll('input[type="datetime-local"]');
             datetimeInputs.forEach(function(input) {
                 const options = {
