@@ -35,11 +35,20 @@ class HolidaySeeder extends Seeder
             ],
         ];
 
-        DB::table('holidays')->upsert(
-            $holidays,
-            ['name'],
-            ['date', 'is_recurring', 'compensate_to', 'updated_at']
-        );
+        foreach ($holidays as $holiday) {
+            $existing = DB::table('holidays')->where('name', $holiday['name'])->first();
+            
+            if ($existing) {
+                DB::table('holidays')->where('id', $existing->id)->update([
+                    'date' => $holiday['date'],
+                    'is_recurring' => $holiday['is_recurring'],
+                    'compensate_to' => $holiday['compensate_to'],
+                    'updated_at' => $now,
+                ]);
+            } else {
+                DB::table('holidays')->insert($holiday);
+            }
+        }
     }
 }
 
