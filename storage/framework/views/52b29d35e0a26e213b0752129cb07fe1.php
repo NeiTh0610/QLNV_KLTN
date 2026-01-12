@@ -207,14 +207,7 @@
                                         <strong>Thông tin kết nối:</strong><br>
                                         <strong>IP hiện tại:</strong> <code><?php echo e($currentIp); ?></code><br>
                                         <strong>Server URL:</strong> <code><?php echo e($serverUrl); ?></code><br>
-                                        <small class="text-muted">
-                                            <strong>Hướng dẫn:</strong><br>
-                                            1. Đảm bảo điện thoại và máy tính cùng mạng WiFi<br>
-                                            2. Chạy Laravel server: <code>php artisan serve --host=0.0.0.0 --port=8000</code><br>
-                                            3. Truy cập từ điện thoại: <code><?php echo e($serverUrl); ?></code> để kiểm tra kết nối<br>
-                                            4. Nếu đổi mạng, reload trang này để cập nhật IP tự động<br>
-                                            5. Nếu không kết nối được, kiểm tra Firewall Windows
-                                        </small>
+                                        
                                     </small>
                                 </div>
                                 <?php endif; ?>
