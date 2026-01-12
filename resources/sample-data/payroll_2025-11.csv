@@ -1,0 +1,4 @@
+user_code,user_name,period_start,period_end,basic_salary,working_days,present_days,ot_hours,gross_salary,deductions,net_pay,status
+EMP001,Nguyen Van A,2025-11-01,2025-11-30,5000000,21,19,4.5,4614285.71,597857.14,4016428.57,generated
+EMP002,Tran Thi B,2025-11-01,2025-11-30,4500000,21,18,2.0,3928571.43,509999.99,3418571.44,generated
+EMP003,Le Van C,2025-11-01,2025-11-30,3000000,21,0,0.0,0.00,0.00,0.00,generated

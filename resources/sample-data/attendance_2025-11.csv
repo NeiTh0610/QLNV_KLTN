@@ -1,0 +1,4 @@
+user_code,user_name,work_date,check_in_at,check_out_at,worked_duration_minutes,status
+EMP001,Nguyen Van A,2025-11-03,2025-11-03 08:05:00,2025-11-03 17:10:00,545,present
+EMP002,Tran Thi B,2025-11-03,2025-11-03 08:45:00,2025-11-03 17:00:00,495,late
+EMP003,Le Van C,2025-11-03,,,,absent

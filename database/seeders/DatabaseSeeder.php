@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             EmployeeProfileAndContractSeeder::class,
             AttendanceSampleSeeder::class,
+            PayrollSampleSeeder::class,
         ]);
     }
 }
