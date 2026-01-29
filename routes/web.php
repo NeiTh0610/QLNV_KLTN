@@ -34,6 +34,8 @@ Route::middleware('auth')->group(function () {
     
     Route::resource('employees', \App\Http\Controllers\EmployeeController::class)->middleware('can:manage-employees');
     
+    Route::resource('departments', \App\Http\Controllers\DepartmentController::class)->middleware('can:manage-employees');
+    
     Route::prefix('reports')->name('reports.')->middleware('can:manage-employees')->group(function () {
         Route::get('/', [\App\Http\Controllers\ReportController::class, 'index'])->name('index');
         Route::get('/export', [\App\Http\Controllers\ReportController::class, 'export'])->name('export');

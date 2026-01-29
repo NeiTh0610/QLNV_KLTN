@@ -291,6 +291,11 @@
                     <span>Nhân viên</span>
                 </a>
                 
+                <a href="{{ route('departments.index') }}" class="nav-link {{ request()->routeIs('departments.*') ? 'active' : '' }}">
+                    <i class="bi bi-building"></i>
+                    <span>Phòng ban</span>
+                </a>
+                
                 <a href="{{ route('reports.index') }}" class="nav-link {{ request()->routeIs('reports.*') ? 'active' : '' }}">
                     <i class="bi bi-bar-chart"></i>
                     <span>Báo cáo</span>

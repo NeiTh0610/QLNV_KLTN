@@ -15,6 +15,27 @@
         </div>
     </div>
 
+    @if(session('qr_scan_ip_warning'))
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-exclamation-triangle-fill me-3" style="font-size: 1.5rem;"></i>
+            <div class="flex-grow-1">
+                <strong>{{ session('qr_scan_ip_warning.message') }}</strong>
+                <div class="mt-1 small text-muted">
+                    <i class="bi bi-clock me-1"></i>Thời gian: {{ session('qr_scan_ip_warning.timestamp') }}
+                    @if(isset(session('qr_scan_ip_warning')['client_ip']))
+                    <br>
+                    <i class="bi bi-phone me-1"></i>IP thiết bị: {{ session('qr_scan_ip_warning.client_ip') }}
+                    <br>
+                    <i class="bi bi-server me-1"></i>IP máy chủ: {{ session('qr_scan_ip_warning.server_ip') }}
+                    @endif
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
     <!-- Check-in/Check-out Cards -->
     <div class="row g-4 mb-4">
         <!-- Check-in Card -->
@@ -47,10 +68,10 @@
                     @else
                     <form method="POST" action="{{ route('attendance.check-in') }}">
                         @csrf
-                        <button type="submit" class="btn btn-lg w-100" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none; color: white; padding: 1rem;">
+                        <!-- <button type="submit" class="btn btn-lg w-100" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none; color: white; padding: 1rem;">
                             <i class="bi bi-fingerprint me-2" style="font-size: 1.5rem;"></i>
                             <span class="fw-bold">Check-in ngay</span>
-                        </button>
+                        </button> -->
                     </form>
                     @endif
                 </div>

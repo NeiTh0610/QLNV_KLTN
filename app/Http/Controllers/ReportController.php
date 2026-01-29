@@ -27,10 +27,11 @@ class ReportController extends Controller
         }
 
         $reports = $this->generateReport($startDate, $endDate, $request->get('department_id'));
+        $departmentReports = $this->generateDepartmentReport($startDate, $endDate, $request->get('department_id'));
 
         $departments = \App\Models\Department::all();
 
-        return view('reports.index', compact('reports', 'period', 'date', 'departments', 'startDate', 'endDate'));
+        return view('reports.index', compact('reports', 'departmentReports', 'period', 'date', 'departments', 'startDate', 'endDate'));
     }
 
     private function generateReport($startDate, $endDate, $departmentId = null)
@@ -63,6 +64,63 @@ class ReportController extends Controller
                 'absent' => $absentDays,
             ];
         })->values();
+    }
+
+    private function generateDepartmentReport($startDate, $endDate, $departmentId = null)
+    {
+        $totalDaysInPeriod = $startDate->diffInDays($endDate) + 1;
+        
+        $query = Attendance::with(['user.profile.department'])
+            ->whereBetween('work_date', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')]);
+
+        if ($departmentId) {
+            $query->whereHas('user.profile', function($q) use ($departmentId) {
+                $q->where('department_id', $departmentId);
+            });
+        }
+
+        $attendances = $query->get();
+
+        // Nhóm theo phòng ban
+        $departmentStats = $attendances->groupBy(function($attendance) {
+            return $attendance->user->profile->department_id ?? 'no_department';
+        })->map(function($deptAttendances, $deptId) use ($totalDaysInPeriod) {
+            $department = $deptAttendances->first()->user->profile->department ?? null;
+            
+            // Lấy danh sách nhân viên duy nhất trong phòng ban
+            $uniqueUsers = $deptAttendances->groupBy('user_id');
+            $totalEmployees = $uniqueUsers->count();
+            
+            // Tính tổng các chỉ số
+            $totalDays = $deptAttendances->count();
+            $totalOnTime = $deptAttendances->where('status', 'on_time')->count();
+            $totalLate = $deptAttendances->where('status', 'late')->count();
+            $totalEarlyLeave = $deptAttendances->where('status', 'early_leave')->count();
+            $totalAbsent = $deptAttendances->where('status', 'absent')->count();
+            
+            // Tính tổng số ngày làm việc lý thuyết (số nhân viên × số ngày trong kỳ)
+            $totalPossibleDays = $totalEmployees * $totalDaysInPeriod;
+            
+            // Tính % ngày nghỉ = (Tổng ngày vắng mặt / Tổng ngày lý thuyết) × 100
+            $absentPercentage = $totalPossibleDays > 0 
+                ? round(($totalAbsent / $totalPossibleDays) * 100, 2) 
+                : 0;
+
+            return [
+                'department' => $department,
+                'department_id' => $deptId,
+                'total_employees' => $totalEmployees,
+                'total_days' => $totalDays,
+                'on_time' => $totalOnTime,
+                'late' => $totalLate,
+                'early_leave' => $totalEarlyLeave,
+                'absent' => $totalAbsent,
+                'absent_percentage' => $absentPercentage,
+                'total_days_in_period' => $totalDaysInPeriod,
+            ];
+        })->values();
+
+        return $departmentStats;
     }
 
     public function export(Request $request)

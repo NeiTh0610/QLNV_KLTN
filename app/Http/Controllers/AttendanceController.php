@@ -157,6 +157,39 @@ class AttendanceController extends Controller
         return 'localhost';
     }
 
+    /**
+     * Kiểm tra xem hai IP có cùng network không (subnet /24)
+     */
+    private function isSameNetwork($ip1, $ip2)
+    {
+        // Nếu một trong hai IP là localhost, coi như cùng network (cho dev)
+        if ($ip1 === 'localhost' || $ip2 === 'localhost' || 
+            $ip1 === '127.0.0.1' || $ip2 === '127.0.0.1' ||
+            $ip1 === '::1' || $ip2 === '::1') {
+            return true;
+        }
+
+        // Validate IP
+        if (!filter_var($ip1, FILTER_VALIDATE_IP) || !filter_var($ip2, FILTER_VALIDATE_IP)) {
+            return false;
+        }
+
+        // Lấy 3 octet đầu (giả sử subnet /24)
+        $ip1Parts = explode('.', $ip1);
+        $ip2Parts = explode('.', $ip2);
+
+        // Chỉ kiểm tra với IPv4
+        if (count($ip1Parts) !== 4 || count($ip2Parts) !== 4) {
+            // Nếu là IPv6 hoặc format khác, cho phép (có thể là cùng network)
+            return true;
+        }
+
+        // So sánh 3 octet đầu
+        return ($ip1Parts[0] === $ip2Parts[0] && 
+                $ip1Parts[1] === $ip2Parts[1] && 
+                $ip1Parts[2] === $ip2Parts[2]);
+    }
+
     public function storeCheckIn(Request $request)
     {
         $user = Auth::user();
@@ -289,6 +322,35 @@ class AttendanceController extends Controller
             return view('attendance.qr-result', [
                 'success' => false,
                 'message' => 'Token không hợp lệ!'
+            ]);
+        }
+
+        // Kiểm tra IP - so sánh IP client với IP máy chủ
+        $serverIp = $this->getLocalIp();
+        $clientIp = $request->ip();
+        
+        // Lấy IP thực từ các header nếu có proxy/load balancer
+        $forwardedIp = $request->header('X-Forwarded-For');
+        if ($forwardedIp) {
+            $clientIp = explode(',', $forwardedIp)[0];
+            $clientIp = trim($clientIp);
+        }
+        
+        // Kiểm tra xem có cùng network không (so sánh 3 octet đầu cho subnet /24)
+        $isSameNetwork = $this->isSameNetwork($serverIp, $clientIp);
+        
+        if (!$isSameNetwork && $serverIp !== 'localhost' && $clientIp !== '127.0.0.1' && $clientIp !== '::1') {
+            // Lưu thông báo vào session để hiển thị trên máy tính
+            session()->flash('qr_scan_ip_warning', [
+                'message' => 'Thiết bị vừa quét QR không cùng IP với máy chủ',
+                'client_ip' => $clientIp,
+                'server_ip' => $serverIp,
+                'timestamp' => now()->format('H:i:s'),
+            ]);
+            
+            return view('attendance.qr-result', [
+                'success' => false,
+                'message' => 'Không cùng IP với máy chủ'
             ]);
         }
 

@@ -13,6 +13,30 @@
         </div>
     </div>
 
+    <?php if(session('qr_scan_ip_warning')): ?>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-exclamation-triangle-fill me-3" style="font-size: 1.5rem;"></i>
+            <div class="flex-grow-1">
+                <strong><?php echo e(session('qr_scan_ip_warning.message')); ?></strong>
+                <div class="mt-1 small text-muted">
+                    <i class="bi bi-clock me-1"></i>Thời gian: <?php echo e(session('qr_scan_ip_warning.timestamp')); ?>
+
+                    <?php if(isset(session('qr_scan_ip_warning')['client_ip'])): ?>
+                    <br>
+                    <i class="bi bi-phone me-1"></i>IP thiết bị: <?php echo e(session('qr_scan_ip_warning.client_ip')); ?>
+
+                    <br>
+                    <i class="bi bi-server me-1"></i>IP máy chủ: <?php echo e(session('qr_scan_ip_warning.server_ip')); ?>
+
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <?php endif; ?>
+
     <!-- Check-in/Check-out Cards -->
     <div class="row g-4 mb-4">
         <!-- Check-in Card -->
@@ -45,10 +69,10 @@
                     <?php else: ?>
                     <form method="POST" action="<?php echo e(route('attendance.check-in')); ?>">
                         <?php echo csrf_field(); ?>
-                        <button type="submit" class="btn btn-lg w-100" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none; color: white; padding: 1rem;">
+                        <!-- <button type="submit" class="btn btn-lg w-100" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); border: none; color: white; padding: 1rem;">
                             <i class="bi bi-fingerprint me-2" style="font-size: 1.5rem;"></i>
                             <span class="fw-bold">Check-in ngay</span>
-                        </button>
+                        </button> -->
                     </form>
                     <?php endif; ?>
                 </div>

@@ -125,5 +125,74 @@
             </div>
         </div>
     </div>
+
+    <!-- Department Summary Report Card -->
+    <div class="card mt-4">
+        <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <h5 class="mb-0 fw-bold">
+                <i class="bi bi-building me-2"></i>
+                Báo cáo tổng hợp theo phòng ban
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3 px-4 fw-semibold">Phòng ban</th>
+                            <th class="py-3 px-4 fw-semibold text-center">Số nhân viên</th>
+                            <th class="py-3 px-4 fw-semibold text-center">Tổng ngày làm việc</th>
+                            <th class="py-3 px-4 fw-semibold text-center">Đúng giờ</th>
+                            <th class="py-3 px-4 fw-semibold text-center">Đi muộn</th>
+                            <th class="py-3 px-4 fw-semibold text-center">Về sớm</th>
+                            <th class="py-3 px-4 fw-semibold text-center">Vắng mặt</th>
+                            <th class="py-3 px-4 fw-semibold text-center">% Ngày nghỉ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($departmentReports as $deptReport)
+                        <tr>
+                            <td class="py-3 px-4 fw-semibold">
+                                {{ $deptReport['department']->name ?? 'Không xác định' }}
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="badge bg-info rounded-pill">{{ $deptReport['total_employees'] }}</span>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="badge bg-primary rounded-pill">{{ $deptReport['total_days'] }}</span>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="badge rounded-pill" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;">
+                                    {{ $deptReport['on_time'] }}
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="badge bg-warning text-dark rounded-pill">{{ $deptReport['late'] }}</span>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="badge bg-danger rounded-pill">{{ $deptReport['early_leave'] }}</span>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="badge bg-dark rounded-pill">{{ $deptReport['absent'] }}</span>
+                            </td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="badge rounded-pill {{ $deptReport['absent_percentage'] > 10 ? 'bg-danger' : ($deptReport['absent_percentage'] > 5 ? 'bg-warning text-dark' : 'bg-success') }}">
+                                    {{ number_format($deptReport['absent_percentage'], 2) }}%
+                                </span>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="8" class="text-center py-5">
+                                <i class="bi bi-inbox text-muted" style="font-size: 4rem; opacity: 0.3;"></i>
+                                <p class="text-muted mt-3">Không có dữ liệu báo cáo phòng ban</p>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
