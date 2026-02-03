@@ -88,7 +88,7 @@ class SettingSeeder extends Seeder
             [
                 'group' => 'payroll',
                 'key' => 'payroll.insurance_base_cap',
-                'value' => '29800000',
+                'value' => '36000000',
                 'created_at' => $now,
                 'updated_at' => $now,
             ],

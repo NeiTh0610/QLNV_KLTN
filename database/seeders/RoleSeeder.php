@@ -43,6 +43,13 @@ class RoleSeeder extends Seeder
                 'created_at' => $now,
                 'updated_at' => $now,
             ],
+            [
+                'name' => 'department_manager',
+                'display_name' => 'Trưởng phòng',
+                'description' => 'Trưởng phòng, quản lý phòng ban và nhân viên trong phòng.',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
         ];
 
         DB::table('roles')->upsert(

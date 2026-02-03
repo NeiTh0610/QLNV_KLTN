@@ -173,13 +173,14 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-        <?php if($overtimeRequests->hasPages()): ?>
-        <div class="card-footer">
-            <?php echo e($overtimeRequests->links()); ?>
 
+            <?php if($overtimeRequests->hasPages()): ?>
+            <div class="p-4 border-top">
+                <?php echo e($overtimeRequests->links('pagination::bootstrap-5')); ?>
+
+            </div>
+            <?php endif; ?>
         </div>
-        <?php endif; ?>
     </div>
 </div>
 <?php $__env->stopSection(); ?>

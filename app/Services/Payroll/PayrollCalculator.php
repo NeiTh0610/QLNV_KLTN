@@ -85,13 +85,13 @@ class PayrollCalculator
                 
                 $actualWorkingDays = $attendanceData['working_days'];
                 
-                // Tính lương cơ bản theo tỷ lệ ngày làm việc thực tế (làm tròn đến hàng triệu)
+                // Tính lương cơ bản theo tỷ lệ ngày làm việc thực tế
                 if ($actualWorkingDays > 0 && $standardWorkingDays > 0) {
                     // Tính lương theo tỷ lệ: (Lương tháng / Số ngày chuẩn) × Số ngày đi làm
                     $salaryPerDay = $baseSalary / $standardWorkingDays;
                     $calculatedSalary = $salaryPerDay * $actualWorkingDays;
-                    // Làm tròn đến hàng triệu (1.000.000đ) - bỏ hết số lẻ
-                    $actualBaseSalary = round($calculatedSalary / 1000000) * 1000000;
+                    // Làm tròn đến hàng nghìn (1.000đ)
+                    $actualBaseSalary = round($calculatedSalary / 1000) * 1000;
                 } else {
                     // Nếu không đi làm ngày nào, lương = 0
                     $actualBaseSalary = 0;
@@ -141,6 +141,7 @@ class PayrollCalculator
                 $personalIncomeTax = 0;
             } else {
                 // Full-time: Tính bảo hiểm và thuế
+                // Bảo hiểm tính trên lương cơ bản (baseSalary), không tính trên phụ cấp và thưởng
                 $insuranceDetails = $this->calculateInsurance($baseSalary);
                 $personalIncomeTax = $this->calculatePersonalIncomeTax(
                     $this->calculateTaxableIncome(
@@ -320,7 +321,7 @@ class PayrollCalculator
      */
     protected function calculateInsurance(float $baseSalary): array
     {
-        $cap = (float) Settings::get('payroll.insurance_base_cap', 29800000);
+        $cap = (float) Settings::get('payroll.insurance_base_cap', 36000000);
         $insuranceBase = min($baseSalary, $cap);
 
         $bhxhRate = (float) Settings::get('payroll.bhxh_rate_employee', 0.08);

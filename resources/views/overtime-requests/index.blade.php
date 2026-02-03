@@ -173,12 +173,13 @@
                     </tbody>
                 </table>
             </div>
+
+            @if($overtimeRequests->hasPages())
+            <div class="p-4 border-top">
+                {{ $overtimeRequests->links('pagination::bootstrap-5') }}
+            </div>
+            @endif
         </div>
-        @if($overtimeRequests->hasPages())
-        <div class="card-footer">
-            {{ $overtimeRequests->links() }}
-        </div>
-        @endif
     </div>
 </div>
 @endsection

@@ -72,6 +72,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('payroll')->name('payroll.')->group(function () {
         Route::get('/my-payroll', [\App\Http\Controllers\PayrollController::class, 'myPayroll'])->name('my-payroll');
         Route::get('/', [\App\Http\Controllers\PayrollController::class, 'index'])->name('index')->middleware('can:manage-employees');
+        Route::get('/export', [\App\Http\Controllers\PayrollController::class, 'export'])->name('export')->middleware('can:manage-employees');
         Route::post('/generate', [\App\Http\Controllers\PayrollController::class, 'generate'])->name('generate')->middleware('can:manage-employees');
         Route::get('/{payroll}', [\App\Http\Controllers\PayrollController::class, 'show'])->name('show')->middleware('can:manage-employees');
         Route::post('/{payroll}/update-status', [\App\Http\Controllers\PayrollController::class, 'updateStatus'])->name('update-status')->middleware('can:manage-employees');

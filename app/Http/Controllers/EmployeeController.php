@@ -18,7 +18,7 @@ class EmployeeController extends Controller
     {
         $query = User::with(['profile.department', 'profile.salaryGrade', 'roles'])
             ->whereHas('roles', function($q) {
-                $q->whereIn('name', ['employee', 'part_time']);
+                $q->whereIn('name', ['employee', 'part_time', 'department_manager']);
             });
 
         // Tìm kiếm theo tên, email, mã nhân viên, số điện thoại
@@ -59,7 +59,7 @@ class EmployeeController extends Controller
     public function create()
     {
         $departments = Department::all();
-        $roles = Role::whereIn('name', ['employee', 'part_time'])->get();
+        $roles = Role::whereIn('name', ['employee', 'part_time', 'department_manager'])->get();
         $salaryGrades = SalaryGrade::all();
 
         return view('employees.create', compact('departments', 'roles', 'salaryGrades'));
@@ -96,13 +96,20 @@ class EmployeeController extends Controller
 
             $user->roles()->attach($validated['role_id']);
 
-            UserProfile::create([
+            $profile = UserProfile::create([
                 'user_id' => $user->id,
                 'department_id' => $validated['department_id'] ?? null,
                 'position' => $validated['position'] ?? null,
                 'salary_grade_id' => $validated['salary_grade_id'] ?? null,
                 'base_salary_override' => $validated['base_salary_override'] ?? null,
             ]);
+
+            // Tự động cập nhật trưởng phòng nếu role là department_manager và có phòng ban
+            $role = Role::find($validated['role_id']);
+            if ($role && $role->name === 'department_manager' && $profile->department_id) {
+                Department::where('id', $profile->department_id)
+                    ->update(['manager_id' => $user->id]);
+            }
         });
 
         return redirect()->route('employees.index')->with('success', 'Thêm nhân viên thành công!');
@@ -111,7 +118,7 @@ class EmployeeController extends Controller
     public function edit(User $employee)
     {
         $departments = Department::all();
-        $roles = Role::whereIn('name', ['employee', 'part_time'])->get();
+        $roles = Role::whereIn('name', ['employee', 'part_time', 'department_manager'])->get();
         $salaryGrades = SalaryGrade::all();
         $employee->load('profile', 'roles');
 
@@ -153,17 +160,48 @@ class EmployeeController extends Controller
 
             $employee->update($updateData);
 
+            // Lấy role cũ để kiểm tra
+            $oldRole = $employee->roles()->first();
+            $oldDepartmentId = $employee->profile->department_id ?? null;
+
             $employee->roles()->sync([$validated['role_id']]);
+
+            // Lấy role mới
+            $newRole = Role::find($validated['role_id']);
+            $newDepartmentId = $validated['department_id'] ?? null;
 
             $employee->profile()->updateOrCreate(
                 ['user_id' => $employee->id],
                 [
-                    'department_id' => $validated['department_id'] ?? null,
+                    'department_id' => $newDepartmentId,
                     'position' => $validated['position'] ?? null,
                     'salary_grade_id' => $validated['salary_grade_id'] ?? null,
                     'base_salary_override' => $validated['base_salary_override'] ?? null,
                 ]
             );
+
+            // Xử lý tự động cập nhật trưởng phòng
+            // Nếu đổi role từ department_manager sang role khác, xóa manager_id của phòng ban cũ
+            if ($oldRole && $oldRole->name === 'department_manager' && $oldDepartmentId) {
+                // Chỉ xóa nếu manager hiện tại là nhân viên này
+                Department::where('id', $oldDepartmentId)
+                    ->where('manager_id', $employee->id)
+                    ->update(['manager_id' => null]);
+            }
+
+            // Nếu đổi phòng ban và vẫn là trưởng phòng, cần xóa manager_id của phòng ban cũ
+            if ($oldDepartmentId && $oldDepartmentId != $newDepartmentId && 
+                $oldRole && $oldRole->name === 'department_manager') {
+                Department::where('id', $oldDepartmentId)
+                    ->where('manager_id', $employee->id)
+                    ->update(['manager_id' => null]);
+            }
+
+            // Nếu role mới là department_manager và có phòng ban, tự động set làm trưởng phòng
+            if ($newRole && $newRole->name === 'department_manager' && $newDepartmentId) {
+                Department::where('id', $newDepartmentId)
+                    ->update(['manager_id' => $employee->id]);
+            }
         });
 
         return redirect()->route('employees.index')->with('success', 'Cập nhật nhân viên thành công!');
@@ -171,7 +209,17 @@ class EmployeeController extends Controller
 
     public function destroy(User $employee)
     {
-        $employee->delete();
+        DB::transaction(function() use ($employee) {
+            // Nếu nhân viên là trưởng phòng, xóa manager_id của phòng ban
+            if ($employee->hasRole('department_manager') && $employee->profile && $employee->profile->department_id) {
+                Department::where('id', $employee->profile->department_id)
+                    ->where('manager_id', $employee->id)
+                    ->update(['manager_id' => null]);
+            }
+
+            $employee->delete();
+        });
+
         return redirect()->route('employees.index')->with('success', 'Xóa nhân viên thành công!');
     }
 }

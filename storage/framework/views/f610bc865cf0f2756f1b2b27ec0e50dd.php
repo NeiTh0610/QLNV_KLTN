@@ -58,10 +58,15 @@
                     </div>
                     <div class="col-md-2">
                         <label class="form-label fw-semibold">&nbsp;</label>
-                        <button type="submit" class="btn btn-gradient w-100">
-                            <i class="bi bi-search me-2"></i>
-                            Tìm kiếm
-                        </button>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-gradient flex-fill">
+                                <i class="bi bi-search me-2"></i>
+                                Tìm kiếm
+                            </button>
+                            <a href="<?php echo e(route('payroll.export', request()->all())); ?>" class="btn btn-success" title="Xuất Excel">
+                                <i class="bi bi-download"></i>
+                            </a>
+                        </div>
                     </div>
                     <div class="col-md-1">
                         <label class="form-label fw-semibold">&nbsp;</label>

@@ -35,7 +35,7 @@ class DepartmentController extends Controller
     public function create()
     {
         $managers = User::whereHas('roles', function($q) {
-            $q->whereIn('name', ['admin', 'manager']);
+            $q->whereIn('name', ['admin', 'manager', 'department_manager']);
         })->get();
 
         return view('departments.create', compact('managers'));
@@ -65,7 +65,7 @@ class DepartmentController extends Controller
     public function edit(Department $department)
     {
         $managers = User::whereHas('roles', function($q) {
-            $q->whereIn('name', ['admin', 'manager']);
+            $q->whereIn('name', ['admin', 'manager', 'department_manager']);
         })->get();
 
         return view('departments.edit', compact('department', 'managers'));
