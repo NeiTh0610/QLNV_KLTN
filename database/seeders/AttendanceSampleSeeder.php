@@ -115,9 +115,10 @@ class AttendanceSampleSeeder extends Seeder
                                 ];
                             }
                             
-                            Attendance::create([
+                            Attendance::updateOrCreate([
                                 'user_id' => $user->id,
                                 'work_date' => $workDate,
+                            ], [
                                 'check_in_at' => $checkIn,
                                 'check_in_method' => 'manual',
                                 'check_in_ip' => '127.0.0.1',

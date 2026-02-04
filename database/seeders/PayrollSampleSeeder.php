@@ -26,50 +26,8 @@ class PayrollSampleSeeder extends Seeder
             $end = $start->copy()->endOfMonth();
 
             foreach ($users as $user) {
-                // Create attendances for every weekday in the month
-                $current = $start->copy();
-                while ($current->lte($end)) {
-                    if ($current->isWeekday()) {
-                        // 80% present
-                        if (rand(1, 100) <= 80) {
-                            $workDate = $current->format('Y-m-d');
-
-                            $checkInHour = rand(7, 8);
-                            $checkInMinute = rand(0, 59);
-                            $checkIn = Carbon::parse("{$workDate} {$checkInHour}:{$checkInMinute}:00");
-
-                            $checkOutHour = rand(16, 19);
-                            $checkOutMinute = rand(0, 59);
-                            $checkOut = Carbon::parse("{$workDate} {$checkOutHour}:{$checkOutMinute}:00");
-
-                            $standardStart = Carbon::parse("{$workDate} 08:00:00");
-                            $standardEnd = Carbon::parse("{$workDate} 17:00:00");
-                            $status = 'on_time';
-                            if ($checkIn->gt($standardStart->copy()->addMinutes(15))) {
-                                $status = 'late';
-                            } elseif ($checkOut->lt($standardEnd->copy()->subMinutes(15))) {
-                                $status = 'early_leave';
-                            }
-
-                            Attendance::updateOrCreate([
-                                'user_id' => $user->id,
-                                'work_date' => $workDate,
-                            ], [
-                                'check_in_at' => $checkIn,
-                                'check_in_method' => 'manual',
-                                'check_in_ip' => '127.0.0.1',
-                                'check_out_at' => $checkOut,
-                                'check_out_method' => 'manual',
-                                'check_out_ip' => '127.0.0.1',
-                                'status' => $status,
-                            ]);
-                        }
-                    }
-
-                    $current->addDay();
-                }
-
-                // Compute payroll summary for the month
+                // Skip creating attendances as AttendanceSampleSeeder already handles this
+                // Just compute payroll summary for the month
                 $workingDays = 0;
                 $temp = $start->copy();
                 while ($temp->lte($end)) {
