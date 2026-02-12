@@ -8,12 +8,21 @@
         <div class="col-lg-10">
             <!-- Page Header -->
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2 class="fw-bold mb-1">
-                        <i class="bi bi-person-circle me-2"></i>
-                        {{ $employee->name }}
-                    </h2>
-                    <p class="text-muted mb-0">Mã NV: {{ $employee->code }}</p>
+                <div class="d-flex align-items-center">
+                    <div style="width:64px;height:64px;overflow:hidden;border-radius:8px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;margin-right:12px;">
+                        @if($employee->avatar_path)
+                            <img src="{{ asset('storage/'.$employee->avatar_path) }}" alt="" style="width:100%;height:100%;object-fit:cover;" />
+                        @else
+                            <span style="color:#9ca3af;font-weight:600;">{{ strtoupper(substr($employee->name,0,1)) }}</span>
+                        @endif
+                    </div>
+                    <div>
+                        <h2 class="fw-bold mb-1">
+                            <i class="bi bi-person-circle me-2"></i>
+                            {{ $employee->name }}
+                        </h2>
+                        <p class="text-muted mb-0">Mã NV: {{ $employee->code }}</p>
+                    </div>
                 </div>
                 <div class="d-flex gap-2">
                     <a href="{{ route('employees.edit', $employee) }}" class="btn btn-gradient">
@@ -84,7 +93,10 @@
                                 <small class="text-muted d-block mb-1">Vai trò</small>
                                 <div>
                                     @foreach($employee->roles as $role)
-                                        <span class="badge badge-custom" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                                        <span class="badge badge-custom d-inline-flex align-items-center" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; gap:8px;">
+                                            @if($role->avatar)
+                                                <img src="{{ asset('storage/'.$role->avatar) }}" alt="" style="width:20px;height:20px;object-fit:cover;border-radius:4px;" />
+                                            @endif
                                             {{ $role->display_name }}
                                         </span>
                                     @endforeach

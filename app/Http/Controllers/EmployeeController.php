@@ -80,6 +80,7 @@ class EmployeeController extends Controller
             'role_id' => 'required|exists:roles,id',
             'salary_grade_id' => 'nullable|exists:salary_grades,id',
             'base_salary_override' => 'nullable|numeric|min:0',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
         DB::transaction(function() use ($validated) {
@@ -93,6 +94,13 @@ class EmployeeController extends Controller
                 'hired_at' => $validated['hired_at'] ?? now(),
                 'email_verified_at' => now(),
             ]);
+
+            // avatar upload
+            if ($request->hasFile('avatar')) {
+                $path = $request->file('avatar')->store('users', 'public');
+                $user->avatar_path = $path;
+                $user->save();
+            }
 
             $user->roles()->attach($validated['role_id']);
 
@@ -141,6 +149,7 @@ class EmployeeController extends Controller
             'role_id' => 'required|exists:roles,id',
             'salary_grade_id' => 'nullable|exists:salary_grades,id',
             'base_salary_override' => 'nullable|numeric|min:0',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
         DB::transaction(function() use ($validated, $employee) {
@@ -158,6 +167,14 @@ class EmployeeController extends Controller
                 $updateData['password'] = Hash::make($validated['password']);
             }
 
+            // handle avatar upload
+            if ($request->hasFile('avatar')) {
+                if ($employee->avatar_path) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($employee->avatar_path);
+                }
+                $path = $request->file('avatar')->store('users', 'public');
+                $updateData['avatar_path'] = $path;
+            }
             $employee->update($updateData);
 
             // Lấy role cũ để kiểm tra

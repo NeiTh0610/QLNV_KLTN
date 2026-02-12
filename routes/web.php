@@ -49,6 +49,10 @@ Route::middleware('auth')->group(function () {
         Route::delete('/holidays/{holiday}', [\App\Http\Controllers\SettingController::class, 'destroyHoliday'])->name('holidays.destroy');
     });
 
+    // Profile routes for authenticated user
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+
     Route::prefix('leave-requests')->name('leave-requests.')->group(function () {
         Route::get('/', [\App\Http\Controllers\LeaveRequestController::class, 'index'])->name('index');
         Route::get('/create', [\App\Http\Controllers\LeaveRequestController::class, 'create'])->name('create');

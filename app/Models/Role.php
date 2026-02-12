@@ -14,6 +14,7 @@ class Role extends Model
         'name',
         'display_name',
         'description',
+        // 'avatar' removed: roles no longer store avatars
     ];
 
     /**

@@ -196,10 +196,16 @@
         }
 
         .user-avatar {
-            width: 48px; height: 48px; border-radius: 12px;
+            width: 64px; height: 64px; border-radius: 12px; overflow: hidden;
             background: linear-gradient(135deg, #22c55e, #10b981);
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.25rem; font-weight: 800; color: #fff;
+            font-size: 1.5rem; font-weight: 800; color: #fff;
+        }
+
+        .user-profile .btn {
+            border-radius: 10px;
+            padding: 0.45rem 0.65rem;
+            font-weight: 700;
         }
 
         /* Table responsive improvements */
@@ -257,13 +263,28 @@
         <div class="sidebar d-flex flex-column" id="sidebar">
             <div class="sidebar-brand">
                 <div class="d-flex align-items-center">
-                    <div class="bg-white rounded-3 p-2 me-3">
-                        <i class="bi bi-clock-history text-primary fs-3"></i>
+                    @auth
+                    <div>
+                        <div style="display:flex;align-items:center;gap:0.75rem">
+                            <div style="width:40px;height:40px;border-radius:8px;overflow:hidden;flex-shrink:0">
+                                @if(auth()->user()->avatar_path)
+                                    <img src="{{ asset('storage/' . auth()->user()->avatar_path) }}" alt="avatar" style="width:40px;height:40px;object-fit:cover;display:block;">
+                                @else
+                                    <div style="width:40px;height:40px;background:linear-gradient(135deg,#22c55e,#10b981);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700">{{ strtoupper(substr(auth()->user()->name,0,1)) }}</div>
+                                @endif
+                            </div>
+                            <div>
+                                <h6 class="text-white mb-0 fw-bold">{{ auth()->user()->name }}</h6>
+                                <small class="text-white-50">{{ auth()->user()->email }}</small>
+                            </div>
+                        </div>
                     </div>
+                    @else
                     <div>
                         <h5 class="text-white mb-0 fw-bold">Chấm Công</h5>
                         <small class="text-white-50">Hệ thống quản lý</small>
                     </div>
+                    @endauth
                 </div>
             </div>
 
@@ -281,6 +302,11 @@
                 <a href="{{ route('attendance.history') }}" class="nav-link {{ request()->routeIs('attendance.history') ? 'active' : '' }}">
                     <i class="bi bi-clock-history"></i>
                     <span>Lịch sử chấm công</span>
+                </a>
+
+                <a href="{{ route('profile.edit') }}" class="nav-link {{ request()->routeIs('profile.edit') ? 'active' : '' }}">
+                    <i class="bi bi-person"></i>
+                    <span>Hồ sơ của tôi</span>
                 </a>
 
                 @can('manage-employees')
@@ -346,21 +372,15 @@
 
             <div class="p-3">
                 <div class="user-profile">
-                    <div class="d-flex align-items-center mb-3">
-                        <div class="user-avatar me-3">
-                            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                        </div>
-                        <div class="flex-grow-1 text-white">
-                            <div class="fw-semibold">{{ auth()->user()->name }}</div>
-                            <small class="text-white-50">{{ auth()->user()->email }}</small>
-                        </div>
+                    
+                    <div class="mb-2">
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="btn btn-light btn-sm w-100">
+                                <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
+                            </button>
+                        </form>
                     </div>
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="btn btn-light btn-sm w-100">
-                            <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>

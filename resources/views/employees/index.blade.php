@@ -87,8 +87,12 @@
                             <td class="py-3 px-4 fw-semibold">{{ $employee->code }}</td>
                             <td class="py-3 px-4">
                                 <div class="d-flex align-items-center">
-                                    <div class="me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">
-                                        {{ strtoupper(substr($employee->name, 0, 1)) }}
+                                    <div class="me-3" style="width: 40px; height: 40px; border-radius: 10px; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+                                        @if($employee->avatar_path)
+                                            <img src="{{ asset('storage/'.$employee->avatar_path) }}" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:8px;" />
+                                        @else
+                                            <div style="width:40px;height:40px;background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display:flex; align-items:center; justify-content:center; color:white; font-weight:700; border-radius:8px;">{{ strtoupper(substr($employee->name,0,1)) }}</div>
+                                        @endif
                                     </div>
                                     <div>
                                         <div class="fw-semibold">{{ $employee->name }}</div>
@@ -100,7 +104,10 @@
                             <td class="py-3 px-4">{{ $employee->profile->department->name ?? '-' }}</td>
                             <td class="py-3 px-4">
                                 @foreach($employee->roles as $role)
-                                    <span class="badge badge-custom" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                                    <span class="badge badge-custom d-inline-flex align-items-center" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; gap:8px;">
+                                        @if($role->avatar)
+                                            <img src="{{ asset('storage/'.$role->avatar) }}" alt="" style="width:20px;height:20px;object-fit:cover;border-radius:4px;" />
+                                        @endif
                                         {{ $role->display_name }}
                                     </span>
                                 @endforeach

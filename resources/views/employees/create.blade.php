@@ -17,7 +17,7 @@
 
             <div class="card">
                 <div class="card-body p-4">
-                    <form method="POST" action="{{ route('employees.store') }}">
+                    <form method="POST" action="{{ route('employees.store') }}" enctype="multipart/form-data">
                         @csrf
 
                         <h5 class="fw-bold mb-4">
@@ -59,6 +59,11 @@
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Ngày vào làm</label>
                                 <input type="date" name="hired_at" value="{{ old('hired_at', now()->format('Y-m-d')) }}" class="form-control" style="border-radius: 12px;">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Avatar</label>
+                                <input type="file" name="avatar" accept="image/*" class="form-control" style="border-radius: 12px;">
+                                @error('avatar')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                             </div>
                         </div>
 

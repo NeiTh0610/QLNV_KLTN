@@ -213,9 +213,7 @@ unset($__errorArgs, $__bag); ?>
                             Ghi nhớ đăng nhập
                         </label>
                     </div>
-                    <a href="#" class="text-decoration-none" style="color: #667eea;">
-                        Quên mật khẩu?
-                    </a>
+                    
                 </div>
 
                 <button type="submit" class="btn btn-login w-100 mb-3">

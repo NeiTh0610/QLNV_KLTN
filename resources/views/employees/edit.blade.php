@@ -17,7 +17,7 @@
 
             <div class="card">
                 <div class="card-body p-4">
-                    <form method="POST" action="{{ route('employees.update', $employee) }}">
+                    <form method="POST" action="{{ route('employees.update', $employee) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -71,6 +71,11 @@
                                 <input type="date" name="hired_at" value="{{ old('hired_at', $employee->hired_at?->format('Y-m-d')) }}" class="form-control" style="border-radius: 12px;">
                             </div>
 
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Avatar</label>
+                                <input type="file" name="avatar" accept="image/*" class="form-control" style="border-radius: 12px;">
+                                @error('avatar')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                            </div>
                             <div class="col-md-6">
                                 <label class="form-label fw-semibold">Ngày nghỉ việc</label>
                                 <input type="date" name="left_at" value="{{ old('left_at', $employee->left_at?->format('Y-m-d')) }}" class="form-control" style="border-radius: 12px;">
