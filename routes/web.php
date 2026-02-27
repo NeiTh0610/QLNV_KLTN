@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\PasswordResetRequestController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -14,13 +15,15 @@ Route::view('/offline', 'offline')->name('offline');
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login']);
+    Route::get('/forgot-password', [PasswordResetRequestController::class, 'create'])->name('password.request');
+    Route::post('/forgot-password', [PasswordResetRequestController::class, 'store'])->name('password.email');
 });
 
 // Public route for QR code scanning (mobile)
 Route::get('/attendance/qr-scan', [AttendanceController::class, 'qrScan'])->name('attendance.qr-scan');
 
 Route::middleware('auth')->group(function () {
-    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
     
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
@@ -49,9 +52,18 @@ Route::middleware('auth')->group(function () {
         Route::delete('/holidays/{holiday}', [\App\Http\Controllers\SettingController::class, 'destroyHoliday'])->name('holidays.destroy');
     });
 
+    // Admin: manage password reset requests
+    Route::get('/password-requests', [PasswordResetRequestController::class, 'index'])
+        ->name('password-requests.index')
+        ->middleware('can:manage-employees');
+    Route::put('/password-requests/{passwordRequest}', [PasswordResetRequestController::class, 'update'])
+        ->name('password-requests.update')
+        ->middleware('can:manage-employees');
+
     // Profile routes for authenticated user
     Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [\App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('profile.password');
 
     Route::prefix('leave-requests')->name('leave-requests.')->group(function () {
         Route::get('/', [\App\Http\Controllers\LeaveRequestController::class, 'index'])->name('index');

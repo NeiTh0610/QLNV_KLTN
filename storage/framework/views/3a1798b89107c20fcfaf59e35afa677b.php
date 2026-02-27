@@ -363,6 +363,11 @@
                     <span>Hợp đồng</span>
                 </a>
                 
+                <a href="<?php echo e(route('password-requests.index')); ?>" class="nav-link <?php echo e(request()->routeIs('password-requests.*') ? 'active' : ''); ?>">
+                    <i class="bi bi-key"></i>
+                    <span>Yêu cầu đặt lại mật khẩu</span>
+                </a>
+                
                 <a href="<?php echo e(route('settings.index')); ?>" class="nav-link <?php echo e(request()->routeIs('settings.*') ? 'active' : ''); ?>">
                     <i class="bi bi-gear"></i>
                     <span>Cài đặt</span>
@@ -374,12 +379,9 @@
                 <div class="user-profile">
                     
                     <div class="mb-2">
-                        <form method="POST" action="<?php echo e(route('logout')); ?>">
-                            <?php echo csrf_field(); ?>
-                            <button type="submit" class="btn btn-light btn-sm w-100">
-                                <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
-                            </button>
-                        </form>
+                        <a href="<?php echo e(route('logout')); ?>" class="btn btn-light btn-sm w-100">
+                            <i class="bi bi-box-arrow-right me-2"></i>Đăng xuất
+                        </a>
                     </div>
                 </div>
             </div>

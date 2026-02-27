@@ -81,7 +81,37 @@
                             </div>
                         </div>
 
-                        <div class="col-12">
+                        <div class="col-lg-6">
+                            <div class="card h-100">
+                                <div class="card-body p-4">
+                                    <h5 class="fw-bold mb-4">
+                                        <i class="bi bi-shield-lock me-2"></i>Đổi mật khẩu
+                                    </h5>
+                                    <form method="POST" action="{{ route('profile.password') }}">
+                                        @csrf
+                                        @method('PUT')
+                                        <div class="mb-3">
+                                            <label class="form-label">Mật khẩu hiện tại</label>
+                                            <input type="password" name="current_password" class="form-control" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Mật khẩu mới</label>
+                                            <input type="password" name="password" class="form-control" required>
+                                            <div class="form-text">Tối thiểu 8 ký tự.</div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Nhập lại mật khẩu mới</label>
+                                            <input type="password" name="password_confirmation" class="form-control" required>
+                                        </div>
+                                        <div class="d-grid">
+                                            <button class="btn btn-gradient">Cập nhật mật khẩu</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6">
                             <div class="card">
                                 <div class="card-body p-4">
                                     <h5 class="fw-bold mb-4"><i class="bi bi-file-earmark-text me-2"></i>Hợp đồng</h5>
