@@ -339,7 +339,7 @@
                 </a>
 
                 @can('manage-employees')
-                <a href="{{ route('payroll.index') }}" class="nav-link {{ request()->routeIs('payroll.index') || request()->routeIs('payroll.show') || request()->routeIs('payroll.generate') ? 'active' : '' }}">
+                <a href="{{ route('payroll.index') }}" class="nav-link {{ request()->routeIs('payroll.*') ? 'active' : '' }}">
                     <i class="bi bi-cash-stack"></i>
                     <span>Quản lý lương</span>
                 </a>

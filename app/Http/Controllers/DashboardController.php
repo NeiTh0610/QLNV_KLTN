@@ -29,12 +29,11 @@ class DashboardController extends Controller
             ->where('status', 'pending')
             ->count();
 
+        $recentActivities = [];
         $currentMonthSalary = PayrollRecord::where('user_id', $user->id)
             ->whereMonth('period_start', now()->month)
             ->whereYear('period_start', now()->year)
             ->value('net_pay') ?? 0;
-
-        $recentActivities = [];
 
         return view('dashboard', compact(
             'todayAttendance',

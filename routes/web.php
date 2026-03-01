@@ -85,13 +85,16 @@ Route::middleware('auth')->group(function () {
         Route::post('/{overtimeRequest}/reject', [\App\Http\Controllers\OvertimeRequestController::class, 'reject'])->name('reject')->middleware('can:manage-employees');
     });
 
-    Route::prefix('payroll')->name('payroll.')->group(function () {
-        Route::get('/my-payroll', [\App\Http\Controllers\PayrollController::class, 'myPayroll'])->name('my-payroll');
-        Route::get('/', [\App\Http\Controllers\PayrollController::class, 'index'])->name('index')->middleware('can:manage-employees');
-        Route::get('/export', [\App\Http\Controllers\PayrollController::class, 'export'])->name('export')->middleware('can:manage-employees');
-        Route::post('/generate', [\App\Http\Controllers\PayrollController::class, 'generate'])->name('generate')->middleware('can:manage-employees');
-        Route::get('/{payroll}', [\App\Http\Controllers\PayrollController::class, 'show'])->name('show')->middleware('can:manage-employees');
-        Route::post('/{payroll}/update-status', [\App\Http\Controllers\PayrollController::class, 'updateStatus'])->name('update-status')->middleware('can:manage-employees');
+    // Payroll: my-payroll trước (không cần manage-employees), sau đó nhóm admin
+    Route::get('/payroll/my-payroll', [\App\Http\Controllers\PayrollController::class, 'myPayroll'])->name('payroll.my-payroll');
+
+    Route::prefix('payroll')->name('payroll.')->middleware('can:manage-employees')->group(function () {
+        Route::get('/', [\App\Http\Controllers\PayrollController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\PayrollController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\PayrollController::class, 'store'])->name('store');
+        Route::get('/export', [\App\Http\Controllers\PayrollController::class, 'export'])->name('export');
+        Route::get('/{payroll}', [\App\Http\Controllers\PayrollController::class, 'show'])->name('show')->whereNumber('payroll');
+        Route::post('/{payroll}/update-status', [\App\Http\Controllers\PayrollController::class, 'updateStatus'])->name('update-status')->whereNumber('payroll');
     });
 
     // Quản lý hồ sơ nhân viên và hợp đồng (chỉ admin)

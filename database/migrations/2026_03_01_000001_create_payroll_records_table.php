@@ -6,11 +6,10 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
+        Schema::dropIfExists('payroll_records');
+
         Schema::create('payroll_records', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
@@ -18,9 +17,14 @@ return new class extends Migration
             $table->date('period_end');
             $table->decimal('basic_salary', 12, 2)->default(0);
             $table->decimal('working_days', 5, 2)->default(0);
+            $table->decimal('hours_per_day', 5, 2)->nullable();
             $table->decimal('ot_hours', 5, 2)->default(0);
             $table->unsignedInteger('late_minutes')->default(0);
+            $table->unsignedInteger('late_count_under_30')->default(0);
+            $table->unsignedInteger('late_count_half_day')->default(0);
             $table->unsignedInteger('leave_minutes')->default(0);
+            $table->unsignedInteger('early_leave_count_under_30')->default(0);
+            $table->unsignedInteger('early_leave_count_half_day')->default(0);
             $table->decimal('deductions', 12, 2)->default(0);
             $table->decimal('allowances', 12, 2)->default(0);
             $table->decimal('gross_salary', 12, 2)->default(0);
@@ -36,9 +40,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('payroll_records');

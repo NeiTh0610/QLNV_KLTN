@@ -339,7 +339,7 @@
                 </a>
 
                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('manage-employees')): ?>
-                <a href="<?php echo e(route('payroll.index')); ?>" class="nav-link <?php echo e(request()->routeIs('payroll.index') || request()->routeIs('payroll.show') || request()->routeIs('payroll.generate') ? 'active' : ''); ?>">
+                <a href="<?php echo e(route('payroll.index')); ?>" class="nav-link <?php echo e(request()->routeIs('payroll.*') ? 'active' : ''); ?>">
                     <i class="bi bi-cash-stack"></i>
                     <span>Quản lý lương</span>
                 </a>
